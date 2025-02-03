@@ -1,0 +1,337 @@
+---
+import Layout from '../layouts/Layout.astro';
+import WorkDetail from '../components/WorkDetail.astro';
+import EthosCard from '../components/EthosCard.astro';
+import OptimizedImage from '../components/OptimizedImage.astro';
+
+const works = [
+  {
+    title: "Neural Dreamscape",
+    description: "An exploration of consciousness through generative patterns, where neural networks interpret and transform human thoughts into visual landscapes.",
+    image: "https://images.unsplash.com/photo-1638586738934-b6e0bed9b236?q=80&w=800&auto=format&fit=crop",
+    category: "Neural Networks",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "The seed of the idea begins with raw brainwave data, transformed into basic visual patterns.",
+        image: "https://images.unsplash.com/photo-1638586738934-b6e0bed9b236?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "Neural networks begin to identify and enhance recurring motifs within the data.",
+        image: "https://images.unsplash.com/photo-1633627243409-45f9e2d2bd26?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "The fully realized dreamscape emerges, blending conscious and subconscious elements.",
+        image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  },
+  {
+    title: "Memory Fragments",
+    description: "Personal narratives transformed through iterative algorithms",
+    image: "https://images.unsplash.com/photo-1633627243409-45f9e2d2bd26?q=80&w=800&auto=format&fit=crop",
+    category: "Memory Processing",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "Raw memories are captured and digitized into base patterns.",
+        image: "https://images.unsplash.com/photo-1633627243409-45f9e2d2bd26?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "Algorithmic processing begins to extract and enhance emotional elements.",
+        image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "The complete memory landscape emerges, bridging past and present.",
+        image: "https://images.unsplash.com/photo-1633627243851-fedcf9b99c82?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  },
+  {
+    title: "Digital Echoes",
+    description: "Synthesizing past and future through generative media",
+    image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop",
+    category: "Temporal Synthesis",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "Temporal data points are collected and mapped.",
+        image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "Time-based patterns begin to emerge and interweave.",
+        image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "A unified temporal narrative takes shape.",
+        image: "https://images.unsplash.com/photo-1633627243851-fedcf9b99c82?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  },
+  {
+    title: "Quantum Reflections",
+    description: "Visual interpretations of quantum mechanical principles",
+    image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+    category: "Quantum Art",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "Quantum data is translated into visual elements.",
+        image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "Quantum patterns are enhanced and layered.",
+        image: "https://images.unsplash.com/photo-1633627243851-fedcf9b99c82?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "The quantum visualization reaches its final form.",
+        image: "https://images.unsplash.com/photo-1638586738934-b6e0bed9b236?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  },
+  {
+    title: "Identity Matrices",
+    description: "Exploring personal identity through mathematical patterns",
+    image: "https://images.unsplash.com/photo-1633627243851-fedcf9b99c82?q=80&w=800&auto=format&fit=crop",
+    category: "Identity Studies",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "Identity markers are converted to mathematical forms.",
+        image: "https://images.unsplash.com/photo-1633627243851-fedcf9b99c82?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "Mathematical patterns begin to reveal identity structures.",
+        image: "https://images.unsplash.com/photo-1638586738934-b6e0bed9b236?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "The complete identity matrix emerges.",
+        image: "https://images.unsplash.com/photo-1633627243409-45f9e2d2bd26?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  },
+  {
+    title: "Future Visions",
+    description: "Speculative futures rendered through AI collaboration",
+    image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop",
+    category: "Future Studies",
+    iterations: [
+      {
+        stage: "Initial Concept",
+        description: "Future scenarios are mapped and analyzed.",
+        image: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Pattern Evolution",
+        description: "AI begins to extrapolate and visualize possibilities.",
+        image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?q=80&w=800&auto=format&fit=crop"
+      },
+      {
+        stage: "Final Synthesis",
+        description: "The speculative future visualization is complete.",
+        image: "https://images.unsplash.com/photo-1633627243409-45f9e2d2bd26?q=80&w=800&auto=format&fit=crop"
+      }
+    ]
+  }
+];
+
+const ethosSections = [
+  {
+    title: "A Vision of Artful Synthesis",
+    content: "Our work blends artistic intuition with modern image-generating techniques, creating visuals that balance illusion and reality in ever-evolving ways. It stems from a belief that technology can be a cooperative partner in the artistic process, allowing creators to explore realms once reserved for dreams and speculative fiction. Yet, the results need not remain trapped in the abstract; we also seek fidelity to real-world details, reflecting the nuance of everyday experience."
+  },
+  {
+    title: "Iterative Creation",
+    content: "One of the cornerstones of this methodology lies in the idea of iteration. Rather than reaching a static final image, we treat each piece as a stage in a conversation between artist and medium. A starting image—whether a fleeting idea or a memory—undergoes multiple rounds of refinement, during which elements like mood, lighting, and composition can be subtly or dramatically shifted. Each new version serves as an opportunity to expand upon the original vision, granting room for deeper meaning and increased resonance."
+  },
+  {
+    title: "Personal Identity & Storytelling",
+    content: "Another defining aspect of this approach involves weaving personal identity into the artwork itself. Through careful calibration, the artist's likeness or symbolic motifs from their own life can seep into the final image, connecting the creative act with personal narratives. These glimpses of self may be framed against entirely imagined backdrops, forging a bridge between what feels intimately real and what is purely speculative. The resulting images can illuminate the complexity of our own histories, relationships, and aspirations."
+  },
+  {
+    title: "Memory, Possibility, and the Future",
+    content: "We recognize that our perceptions of the past and our visions of the future are both shaped by the stories we tell ourselves. With the tools at hand, it becomes possible to revisit pivotal moments—allowing us to capture emotional nuances we might otherwise struggle to communicate. Simultaneously, we can peer into hypothetical tomorrows, crafting visual glimpses of what lies ahead. Whether hopeful or cautionary, these artworks can spark constructive dialogue about the collective road forward, inspiring both introspection and shared imagination."
+  },
+  {
+    title: "Balancing Illusion and Authenticity",
+    content: "Central to our work is an ongoing tension between the real and the unreal, between the concrete and the ethereal. Even when an image appears familiar or true-to-life, subtle illusions might be threaded throughout, hinting at deeper layers of interpretation. By leaning into these contrasts, we invite viewers to decipher meaning for themselves—an experience that can feel simultaneously comforting and provocative. In this way, each piece stands as a testament to how human creativity can blend seamlessly with technological advancement."
+  },
+  {
+    title: "Looking Ahead",
+    content: "Through these techniques, we celebrate art's capacity to connect people, awaken curiosity, and uncover aspects of our shared human experience. This endeavor is not just about generating captivating visuals—it also aims to nurture dialogue on how we represent ourselves, our memories, and our evolving potential. As we continue to experiment, refine, and reinterpret, we hope the body of work we produce will evoke thoughtful conversation, spark imagination, and ultimately reflect the many vibrant possibilities that lie at the intersection of creativity and invention."
+  }
+];
+---
+
+<Layout title="MagicBox Labs - Artful Synthesis in Generative Media">
+  <main>
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center pt-20">
+      <div class="container">
+        <h1 class="text-display font-medium mb-6 max-w-3xl">
+          Artful Synthesis in Generative Media
+        </h1>
+        <p class="text-light-gray/80 text-lg max-w-2xl">
+          Blending artistic intuition with modern image-generating techniques, creating visuals that balance illusion and reality in ever-evolving ways.
+        </p>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-32">
+      <div class="container">
+        <span class="text-primary font-medium mb-4 block text-sm tracking-wider uppercase">About Us</span>
+        <h2 class="text-heading font-medium mb-16">Our Vision & Ethos</h2>
+        
+        <div class="space-y-32">
+          {ethosSections.map((section, index) => (
+            <div 
+              class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center opacity-0 translate-y-8 transition-all duration-700"
+              data-ethos-section
+            >
+              <EthosCard 
+                title={section.title}
+                content={section.content}
+                index={index}
+              />
+              <div class={`${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
+                <p class="text-light-gray/80 text-lg leading-relaxed">
+                  {section.content}
+                </p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Ethos Section -->
+    <section id="ethos" class="py-32">
+      <div class="container">
+        <span class="text-primary font-medium mb-4 block text-sm tracking-wider uppercase">Our Ethos</span>
+        <h2 class="text-heading font-medium mb-6">A Vision of Artful Synthesis</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-16">
+          <div class="bg-white/5 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
+            <h3 class="text-xl font-medium mb-4">Iterative Creation</h3>
+            <p class="text-light-gray/80">Each piece is a stage in a conversation between artist and medium, undergoing multiple rounds of refinement.</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
+            <h3 class="text-xl font-medium mb-4">Personal Identity</h3>
+            <p class="text-light-gray/80">Weaving personal narratives into artwork, connecting creative acts with individual stories.</p>
+          </div>
+          <div class="bg-white/5 rounded-2xl p-8 hover:bg-white/10 transition-all duration-300">
+            <h3 class="text-xl font-medium mb-4">Future Vision</h3>
+            <p class="text-light-gray/80">Crafting visual glimpses of what lies ahead, inspiring both introspection and shared imagination.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Works Section -->
+    <section id="works" class="py-32">
+      <div class="container">
+        <span class="text-primary font-medium mb-4 block text-sm tracking-wider uppercase">Our Works</span>
+        <h2 class="text-heading font-medium mb-6">Featured Projects</h2>
+        <p class="text-light-gray/80 text-lg max-w-2xl mb-16">
+          Explore our collection of generative artworks, each piece representing a unique journey through technology and creativity.
+        </p>
+<!-- Works Section -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+  {works.map((work, index) => (
+    <div>
+      <div 
+        class="group relative overflow-hidden rounded-2xl bg-white/5 aspect-square cursor-pointer"
+        data-work-trigger={index}
+      >
+        <OptimizedImage 
+          src={work.image} 
+          alt={work.title}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-secondary/90 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 p-8 flex flex-col justify-end">
+          <span class="text-primary text-sm font-medium mb-2">{work.category}</span>
+          <h3 class="text-xl font-medium mb-2">{work.title}</h3>
+          <p class="text-light-gray/80 text-sm">{work.description}</p>
+        </div>
+      </div>
+      <WorkDetail {...work} />
+    </div>
+  ))}
+</div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-32 bg-white/5">
+      <div class="container">
+        <span class="text-primary font-medium mb-4 block text-sm tracking-wider uppercase">Get in Touch</span>
+        <h2 class="text-heading font-medium mb-6">Let's Create Together</h2>
+        <p class="text-light-gray/80 text-lg max-w-2xl mb-8">
+          Interested in collaboration or want to learn more about our work? We'd love to hear from you.
+        </p>
+        <a href="mailto:hello@magicboxlabs.com" class="inline-block bg-primary text-white px-8 py-4 rounded-xl hover:bg-primary/90 transition-all duration-300">
+          Contact Us
+        </a>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Initialize work detail functionality
+  const workTriggers = document.querySelectorAll('[data-work-trigger]');
+  const workDetails = document.querySelectorAll('[data-work-detail]');
+  const closeButtons = document.querySelectorAll('[data-close-detail]');
+
+  workTriggers.forEach((trigger, index) => {
+    trigger.addEventListener('click', () => {
+      const detail = workDetails[index] as HTMLElement;
+      detail.style.opacity = '1';
+      detail.style.pointerEvents = 'auto';
+      document.body.style.overflow = 'hidden';
+    });
+  });
+
+  closeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const detail = button.closest('[data-work-detail]') as HTMLElement;
+      detail.style.opacity = '0';
+      detail.style.pointerEvents = 'none';
+      document.body.style.overflow = '';
+    });
+  });
+
+  // Initialize scroll reveal for ethos sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.remove('opacity-0', 'translate-y-8');
+      }
+    });
+  }, {
+    threshold: 0.1
+  });
+
+  document.querySelectorAll('[data-ethos-section]').forEach((section) => {
+    observer.observe(section);
+  });
+</script>
+
+<style>
+  main {
+    @apply pt-20;
+  }
+</style>

@@ -1,0 +1,59 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  category: string;
+  image: string;
+  iterations?: {
+    stage: string;
+    description: string;
+    image: string;
+  }[];
+}
+
+const { title, description, category, image, iterations = [] } = Astro.props;
+---
+
+<div 
+  class="fixed inset-0 bg-secondary/95 backdrop-blur-lg z-50 opacity-0 pointer-events-none transition-opacity duration-500"
+  data-work-detail
+>
+  <button 
+    class="absolute top-8 right-8 text-light-gray hover:text-white transition-colors"
+    data-close-detail
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+
+  <div class="container h-full py-20 overflow-y-auto">
+    <div class="max-w-4xl mx-auto">
+      <span class="text-primary text-sm font-medium mb-2 block">{category}</span>
+      <h2 class="text-heading font-medium mb-6">{title}</h2>
+      <p class="text-light-gray/80 text-lg mb-12">{description}</p>
+
+      <div class="space-y-24">
+        {iterations.map((iteration, index) => (
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class={`order-2 ${index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'}`}>
+              <span class="text-primary font-medium mb-4 block text-sm tracking-wider uppercase">
+                Stage {index + 1}
+              </span>
+              <h3 class="text-xl font-medium mb-4">{iteration.stage}</h3>
+              <p class="text-light-gray/80">{iteration.description}</p>
+            </div>
+            <div class={`order-1 ${index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'}`}>
+              <img 
+                src={iteration.image} 
+                alt={iteration.stage}
+                class="w-full rounded-2xl"
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,323 @@
+---
+interface Props {
+  title: string;
+  content: string;
+  index: number;
+}
+
+const { title, content, index } = Astro.props;
+---
+
+<div class={`${index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'}`}>
+  <div 
+    class="bg-white/5 rounded-2xl aspect-square flex items-center justify-center p-8 relative overflow-hidden group cursor-pointer"
+    data-ethos-card
+  >
+    <canvas 
+      class="absolute inset-0 w-full h-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      data-ethos-canvas
+      data-card-title={title}
+    ></canvas>
+    <h3 class="text-2xl font-medium text-center relative z-10 transition-transform duration-500 group-hover:scale-110 pointer-events-none">
+      {title}
+    </h3>
+    <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+  </div>
+</div>
+
+<script>
+interface ParticleBase {
+  x: number;
+  y: number;
+  draw(ctx: CanvasRenderingContext2D): void;
+  update(): void;
+}
+
+class StandardParticle implements ParticleBase {
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 2 + 1;
+    this.speedX = (Math.random() - 0.5) * 2;
+    this.speedY = (Math.random() - 0.5) * 2;
+    this.alpha = 0;
+  }
+
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if (this.alpha < 1) this.alpha += 0.02;
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = `rgba(77, 126, 255, ${this.alpha * 0.6})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  x: number;
+  y: number;
+  size: number;
+  speedX: number;
+  speedY: number;
+  alpha: number;
+}
+
+class IterativeParticle implements ParticleBase {
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 2 + 1;
+    this.alpha = 0;
+    this.phase = Math.random() * Math.PI * 2;
+    this.radius = Math.random() * 20 + 10;
+    this.baseX = x;
+    this.baseY = y;
+    this.iteration = 0;
+    this.iterationProgress = 0;
+    this.speed = 0.01 + Math.random() * 0.01;
+  }
+
+  update() {
+    if (this.alpha < 1) this.alpha += 0.02;
+
+    // Update iteration progress
+    this.iterationProgress += this.speed;
+    if (this.iterationProgress >= 1) {
+      this.iterationProgress = 0;
+      this.iteration = (this.iteration + 1) % 4;
+      this.phase = Math.random() * Math.PI * 2;
+      this.radius = Math.random() * 20 + 10;
+    }
+
+    // Calculate position based on current iteration
+    switch (this.iteration) {
+      case 0: // Circular motion
+        this.x = this.baseX + Math.cos(this.phase + this.iterationProgress * Math.PI * 2) * this.radius;
+        this.y = this.baseY + Math.sin(this.phase + this.iterationProgress * Math.PI * 2) * this.radius;
+        break;
+      
+      case 1: // Spiral outward
+        const spiralRadius = this.radius * (1 + this.iterationProgress);
+        this.x = this.baseX + Math.cos(this.phase + this.iterationProgress * Math.PI * 4) * spiralRadius;
+        this.y = this.baseY + Math.sin(this.phase + this.iterationProgress * Math.PI * 4) * spiralRadius;
+        break;
+      
+      case 2: // Converge to center
+        const targetRadius = this.radius * (1 - this.iterationProgress);
+        this.x = this.baseX + Math.cos(this.phase) * targetRadius;
+        this.y = this.baseY + Math.sin(this.phase) * targetRadius;
+        break;
+      
+      case 3: // Wave pattern
+        const waveAmplitude = this.radius * Math.sin(this.iterationProgress * Math.PI * 2);
+        this.x = this.baseX + Math.cos(this.phase) * waveAmplitude;
+        this.y = this.baseY + Math.sin(this.phase) * waveAmplitude;
+        break;
+    }
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = `rgba(77, 126, 255, ${this.alpha * 0.6})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw a subtle trail
+    ctx.strokeStyle = `rgba(77, 126, 255, ${this.alpha * 0.2})`;
+    ctx.beginPath();
+    ctx.moveTo(this.baseX, this.baseY);
+    ctx.lineTo(this.x, this.y);
+    ctx.stroke();
+  }
+
+  x: number;
+  y: number;
+  size: number;
+  alpha: number;
+  phase: number;
+  radius: number;
+  baseX: number;
+  baseY: number;
+  iteration: number;
+  iterationProgress: number;
+  speed: number;
+}
+
+class IdentityParticle implements ParticleBase {
+  constructor(x: number, y: number, canvas: HTMLCanvasElement) {
+    this.x = x;
+    this.y = y;
+    this.size = Math.random() * 2 + 1;
+    this.alpha = 0;
+    this.canvas = canvas;
+    this.targetPoints = this.generateSilhouettePoints();
+    this.currentTarget = Math.floor(Math.random() * this.targetPoints.length);
+    this.transitionProgress = 0;
+    this.transitionSpeed = 0.01 + Math.random() * 0.02;
+    this.originalX = x;
+    this.originalY = y;
+    this.isReturning = false;
+  }
+
+  generateSilhouettePoints(): { x: number, y: number }[] {
+    const points: { x: number, y: number }[] = [];
+    const centerX = this.canvas.width / 2;
+    const centerY = this.canvas.height / 2;
+    const scale = Math.min(this.canvas.width, this.canvas.height) * 0.3;
+
+    // Head
+    for (let angle = 0; angle < Math.PI * 2; angle += 0.3) {
+      points.push({
+        x: centerX + Math.cos(angle) * (scale * 0.2),
+        y: centerY - scale * 0.5 + Math.sin(angle) * (scale * 0.2)
+      });
+    }
+
+    // Body
+    for (let t = 0; t <= 1; t += 0.1) {
+      // Torso
+      points.push({
+        x: centerX,
+        y: centerY - scale * 0.3 + t * scale * 0.6
+      });
+
+      // Arms
+      if (t <= 0.6) {
+        points.push({
+          x: centerX - scale * 0.3 + t * scale * 0.3,
+          y: centerY - scale * 0.2
+        });
+        points.push({
+          x: centerX + scale * 0.3 - t * scale * 0.3,
+          y: centerY - scale * 0.2
+        });
+      }
+
+      // Legs
+      if (t >= 0.6) {
+        const legT = (t - 0.6) / 0.4;
+        points.push({
+          x: centerX - scale * 0.15 - legT * scale * 0.1,
+          y: centerY + scale * 0.3 + legT * scale * 0.3
+        });
+        points.push({
+          x: centerX + scale * 0.15 + legT * scale * 0.1,
+          y: centerY + scale * 0.3 + legT * scale * 0.3
+        });
+      }
+    }
+
+    return points;
+  }
+
+  update() {
+    if (this.alpha < 1) this.alpha += 0.02;
+
+    const target = this.isReturning 
+      ? { x: this.originalX, y: this.originalY }
+      : this.targetPoints[this.currentTarget];
+
+    const dx = target.x - this.x;
+    const dy = target.y - this.y;
+    
+    this.x += dx * this.transitionSpeed;
+    this.y += dy * this.transitionSpeed;
+
+    const distanceToTarget = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distanceToTarget < 1) {
+      if (this.isReturning) {
+        this.isReturning = false;
+        this.currentTarget = Math.floor(Math.random() * this.targetPoints.length);
+      } else {
+        this.isReturning = true;
+      }
+    }
+  }
+
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillStyle = `rgba(77, 126, 255, ${this.alpha * 0.6})`;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  x: number;
+  y: number;
+  size: number;
+  alpha: number;
+  canvas: HTMLCanvasElement;
+  targetPoints: { x: number, y: number }[];
+  currentTarget: number;
+  transitionProgress: number;
+  transitionSpeed: number;
+  originalX: number;
+  originalY: number;
+  isReturning: boolean;
+}
+
+class ParticleSystem {
+  constructor(canvas: HTMLCanvasElement, title: string) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d')!;
+    this.particles = [];
+    this.title = title;
+
+    this.resize();
+    this.setupParticles();
+    this.animate = this.animate.bind(this);
+    
+    window.addEventListener('resize', this.resize.bind(this));
+  }
+
+  resize() {
+    this.canvas.width = this.canvas.offsetWidth;
+    this.canvas.height = this.canvas.offsetHeight;
+  }
+
+  setupParticles() {
+    const particleCount = 50;
+    for (let i = 0; i < particleCount; i++) {
+      const x = Math.random() * this.canvas.width;
+      const y = Math.random() * this.canvas.height;
+      
+      if (this.title.includes('Iterative Creation')) {
+        this.particles.push(new IterativeParticle(x, y));
+      } else if (this.title.includes('Personal Identity')) {
+        this.particles.push(new IdentityParticle(x, y, this.canvas));
+      } else {
+        this.particles.push(new StandardParticle(x, y));
+      }
+    }
+  }
+
+  animate() {
+    if (!this.ctx) return;
+    
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.particles.forEach(particle => {
+      particle.update();
+      particle.draw(this.ctx);
+    });
+    
+    requestAnimationFrame(this.animate);
+  }
+
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  particles: ParticleBase[];
+  title: string;
+}
+
+// Initialize particle effects for each ethos card
+document.querySelectorAll('[data-ethos-card]').forEach((card) => {
+  const canvas = card.querySelector('[data-ethos-canvas]') as HTMLCanvasElement;
+  const title = canvas.getAttribute('data-card-title') || '';
+  
+  const particleSystem = new ParticleSystem(canvas, title);
+  particleSystem.animate();
+});
+</script>

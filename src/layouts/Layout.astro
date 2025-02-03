@@ -1,0 +1,105 @@
+---
+import NeuralAnimation from '../components/NeuralAnimation.astro';
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="MagicBox Labs - Artful Synthesis in Generative Media" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-secondary text-off-white font-mono">
+    <NeuralAnimation />
+    <nav class="fixed w-full h-20 bg-white/80 backdrop-blur-md border-b border-light-gray z-50">
+      <div class="container h-full flex items-center justify-between">
+        <a href="/" class="text-secondary font-medium text-xl">MagicBox Labs</a>
+        
+        <!-- Mobile menu button -->
+        <button 
+          id="mobile-menu-button" 
+          class="lg:hidden text-secondary p-2 z-50"
+          aria-label="Toggle menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path class="menu-open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+            <path class="menu-close hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+
+        <!-- Desktop menu -->
+        <div class="hidden lg:flex space-x-8">
+          <a href="#about" class="text-secondary hover:text-primary transition-colors">About</a>
+          <a href="#ethos" class="text-secondary hover:text-primary transition-colors">Ethos</a>
+          <a href="#works" class="text-secondary hover:text-primary transition-colors">Works</a>
+          <a href="#contact" class="text-secondary hover:text-primary transition-colors">Contact</a>
+        </div>
+
+        <!-- Mobile menu panel -->
+        <div 
+          id="mobile-menu" 
+          class="fixed inset-0 bg-white/95 backdrop-blur-lg transform translate-x-full transition-transform duration-300 lg:hidden z-40"
+          style="top: 5rem;"
+        >
+          <div class="flex flex-col items-center pt-8 space-y-8 text-xl">
+            <a href="#about" class="text-secondary hover:text-primary transition-colors">About</a>
+            <a href="#ethos" class="text-secondary hover:text-primary transition-colors">Ethos</a>
+            <a href="#works" class="text-secondary hover:text-primary transition-colors">Works</a>
+            <a href="#contact" class="text-secondary hover:text-primary transition-colors">Contact</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <slot />
+  </body>
+</html>
+
+<script>
+  const mobileMenuButton = document.getElementById('mobile-menu-button');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const menuOpenIcon = document.querySelector('.menu-open');
+  const menuCloseIcon = document.querySelector('.menu-close');
+  let isMenuOpen = false;
+
+  function toggleMenu() {
+    isMenuOpen = !isMenuOpen;
+    
+    // Toggle menu visibility
+    if (isMenuOpen) {
+      mobileMenu?.classList.remove('translate-x-full');
+      menuOpenIcon?.classList.add('hidden');
+      menuCloseIcon?.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      mobileMenu?.classList.add('translate-x-full');
+      menuOpenIcon?.classList.remove('hidden');
+      menuCloseIcon?.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Toggle menu on button click
+  mobileMenuButton?.addEventListener('click', toggleMenu);
+
+  // Close menu when clicking menu items
+  mobileMenu?.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (isMenuOpen) toggleMenu();
+    });
+  });
+
+  // Close menu on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isMenuOpen) toggleMenu();
+  });
+</script>

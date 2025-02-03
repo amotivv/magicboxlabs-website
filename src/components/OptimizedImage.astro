@@ -1,0 +1,40 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  className?: string;
+  sizes?: string;
+  loading?: "lazy" | "eager";
+}
+
+const { 
+  src, 
+  alt, 
+  className = "", 
+  sizes = "100vw", 
+  loading = "lazy" 
+} = Astro.props;
+
+// Generate responsive image URLs (assuming a hypothetical image service)
+const generateSrcSet = (src: string) => {
+  const widths = [320, 640, 768, 1024, 1280, 1536];
+  return widths
+    .map(w => `${src}?w=${w}&q=75 ${w}w`)
+    .join(', ');
+};
+
+const srcSet = generateSrcSet(src);
+---
+
+<picture>
+  <source type="image/webp" srcset={generateSrcSet(src.replace(/\.(jpg|png)$/, '.webp'))} sizes={sizes} />
+  <img
+    src={src}
+    srcset={srcSet}
+    sizes={sizes}
+    alt={alt}
+    class={className}
+    loading={loading}
+    decoding="async"
+  />
+</picture>

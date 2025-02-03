@@ -1,0 +1,151 @@
+---
+---
+
+<canvas id="neuralCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none opacity-30"></canvas>
+
+<script>
+class Particle {
+  x: number;
+  y: number;
+  vx: number;
+  vy: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+    this.vx = (Math.random() - 0.5) * 0.5;
+    this.vy = (Math.random() - 0.5) * 0.5;
+  }
+}
+
+class ParticleSystem {
+  private canvas: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
+  private particles: Particle[];
+  private isVisible: boolean = true;
+  private lastDrawTime: number = 0;
+  private readonly RAF_INTERVAL = 1000 / 30; // 30 FPS
+  private readonly connectionDistance = 150;
+  private readonly particleCount = 100;
+  private offscreenCanvas: OffscreenCanvas;
+  private offscreenCtx: OffscreenCanvasRenderingContext2D;
+
+  constructor(canvas: HTMLCanvasElement) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d')!;
+    this.particles = [];
+    
+    // Initialize offscreen canvas
+    this.offscreenCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+    this.offscreenCtx = this.offscreenCanvas.getContext('2d')!;
+
+    this.setupParticles();
+    this.setupVisibilityDetection();
+    this.setupResizeHandler();
+    
+    // Bind animate to preserve context
+    this.animate = this.animate.bind(this);
+  }
+
+  private setupParticles(): void {
+    for (let i = 0; i < this.particleCount; i++) {
+      this.particles.push(new Particle(
+        Math.random() * this.canvas.width,
+        Math.random() * this.canvas.height
+      ));
+    }
+  }
+
+  private setupVisibilityDetection(): void {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        this.isVisible = entries[0].isIntersecting;
+      },
+      { threshold: 0 }
+    );
+    observer.observe(this.canvas);
+  }
+
+  private setupResizeHandler(): void {
+    const resizeCanvas = () => {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+      this.offscreenCanvas.width = this.canvas.width;
+      this.offscreenCanvas.height = this.canvas.height;
+    };
+
+    resizeCanvas();
+    
+    let resizeTimeout: number;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeCanvas, 150);
+    });
+  }
+
+  private drawParticles(): void {
+    this.offscreenCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    
+    this.particles.forEach(particle => {
+      // Update position
+      particle.x += particle.vx;
+      particle.y += particle.vy;
+      
+      // Bounce off edges
+      if (particle.x < 0 || particle.x > this.canvas.width) particle.vx *= -1;
+      if (particle.y < 0 || particle.y > this.canvas.height) particle.vy *= -1;
+      
+      // Draw particle
+      this.offscreenCtx.beginPath();
+      this.offscreenCtx.arc(particle.x, particle.y, 2, 0, Math.PI * 2);
+      this.offscreenCtx.fillStyle = '#4D7EFF';
+      this.offscreenCtx.fill();
+      
+      // Draw connections
+      this.particles.forEach(otherParticle => {
+        const dx = particle.x - otherParticle.x;
+        const dy = particle.y - otherParticle.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < this.connectionDistance) {
+          this.offscreenCtx.beginPath();
+          this.offscreenCtx.moveTo(particle.x, particle.y);
+          this.offscreenCtx.lineTo(otherParticle.x, otherParticle.y);
+          this.offscreenCtx.strokeStyle = `rgba(77, 126, 255, ${(this.connectionDistance - distance) / this.connectionDistance * 0.15})`;
+          this.offscreenCtx.stroke();
+        }
+      });
+    });
+
+    // Copy to main canvas in one operation
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.drawImage(this.offscreenCanvas, 0, 0);
+  }
+
+  public animate(timestamp: number): void {
+    if (!this.isVisible) {
+      requestAnimationFrame(this.animate);
+      return;
+    }
+
+    // Throttle frame rate
+    if (timestamp - this.lastDrawTime < this.RAF_INTERVAL) {
+      requestAnimationFrame(this.animate);
+      return;
+    }
+    
+    this.lastDrawTime = timestamp;
+    this.drawParticles();
+    requestAnimationFrame(this.animate);
+  }
+
+  public start(): void {
+    requestAnimationFrame(this.animate);
+  }
+}
+
+// Initialize the system
+const canvas = document.getElementById('neuralCanvas') as HTMLCanvasElement;
+const particleSystem = new ParticleSystem(canvas);
+particleSystem.start();
+</script>
